@@ -1,5 +1,5 @@
 from math import sqrt
-from numpy import square
+#from numpy import square
 # A dictionary of movie critics and their ratings of a small
 # set of movies
 critics = {'Lisa Rose': {'Lady in the Water': 2.5, 'Snakes on a Plane': 3.5,
@@ -42,7 +42,7 @@ def sim_distance(prefs, person1, person2):
 	
 	return 1/(1 + sum_of_squares)
 
-print(sim_distance(critics, 'Lisa Rose', 'Gene Seymour'))
+#print(sim_distance(critics, 'Lisa Rose', 'Gene Seymour'))
 
 
 # Returns the Pearson correlation coefficient for p1 and p2
@@ -77,7 +77,7 @@ def sim_pearson(prefs, p1,p2):
 	r = num/den
 	return r
 
-print(sim_pearson(critics, 'Lisa Rose', 'Gene Seymour'))
+#print(sim_pearson(critics, 'Lisa Rose', 'Gene Seymour'))
 
 # Returns the best matches for the person from the prefs dictionary
 # Number of results and similarity function are optional params
@@ -89,4 +89,36 @@ def topMatches(prefs, person, n=5, similarity=sim_pearson):
 	scores.sort(reverse=True)
 	return scores[0:n]
 
-print(topMatches(critics, 'Toby', n=3))
+#print(topMatches(critics, 'Toby', n=3))
+
+# Gets recommendations for a person by using weighted average
+# of every other user's ranking
+def getRecommendations(prefs, person, similarity=sim_pearson):
+	totals = {}
+	simSums = {}
+	
+	for other in prefs:
+		# Don't compare me to myself
+		if other == person: continue
+		sim=similarity(prefs, person, other)
+		
+		# Ignore scores of zero or lower
+		if sim<=0: continue
+		for item in prefs[other]:
+			# only score movies which I haven't seen yet
+			if item not in prefs[person] or prefs[person][item] == 0:
+				# Similarity * Score
+				totals.setdefault(item, 0)
+				totals[item] += prefs[other][item]*sim
+				# Sum of similarities
+				simSums.setdefault(item,0)
+				simSums[item] += sim
+	
+	# Create the normalized list
+	rankings = [(total/simSums[item], item) for item,total in totals.items()]
+	
+	# Return the sorted list
+	rankings.sort(reverse=True)
+	return rankings
+
+print(getRecommendations(critics, 'Toby'))
