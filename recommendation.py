@@ -201,9 +201,9 @@ def loadMovieLens(path='ml-100k'):
 		prefs[user][movies[movieid]]=float(rating)
 	return prefs
 
-prefs=loadMovieLens()
+#prefs=loadMovieLens()
 #print(prefs['87'])
 #print(getRecommendations(prefs, '87')[0:30])
 
-itemsim = calculateSimilarItems(prefs, n=50)
-print(getRecommendedItems(prefs, itemsim, '87')[0:30])
+#itemsim = calculateSimilarItems(prefs, n=50)
+#print(getRecommendedItems(prefs, itemsim, '87')[0:30])
